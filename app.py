@@ -23,8 +23,8 @@ def load_data():
     
     # 2. Add a check to provide a helpful error message if file is missing
     if not os.path.exists(file_path):
-        st.error(f"🚨 File not found! Please ensure '{file_path}' is uploaded to GitHub.")
-        st.stop()
+os.path.join(base_path, "emotionaimirror.csv")
+st.stop()
         
     return pd.read_csv(file_path)
 
