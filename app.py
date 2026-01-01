@@ -3,7 +3,7 @@ import pandas as pd
 import random
 import os
 
-# ---------------- PAGE SETTINGS ----------------
+# ---------------- PAGE CONFIGURATION ----------------
 st.set_page_config(
     page_title="Emotion AI Mirror",
     page_icon="😊",
@@ -17,43 +17,56 @@ st.write("Emotion-based Music and Quotes Recommendation System")
 # ---------------- LOAD CSV DATA ----------------
 @st.cache_data
 def load_data():
-    csv_path = os.path.join("emotionaimirror", "emotionaimirror.csv")
-    return pd.read_csv(csv_path)
+    # 1. Resolve the absolute path to the CSV file
+    base_path = os.path.dirname(__file__)
+    file_path = os.path.join(base_path, "emotionaimirror.csv")
+    
+    # 2. Add a check to provide a helpful error message if file is missing
+    if not os.path.exists(file_path):
+        st.error(f"🚨 File not found! Please ensure '{file_path}' is uploaded to GitHub.")
+        st.stop()
+        
+    return pd.read_csv(file_path)
 
 data = load_data()
 
 # ---------------- EMOTION SELECTION ----------------
 st.subheader("Select Your Emotion")
-
+# Use index=None or placeholder to prevent immediate loading if desired
 emotion = st.selectbox(
     "Choose an emotion:",
     data["emotion"].unique()
 )
 
 # ---------------- DISPLAY RESULT ----------------
-row = data[data["emotion"] == emotion].iloc[0]
+# Use a filter to get rows for the selected emotion
+filtered_data = data[data["emotion"] == emotion]
 
-st.markdown("---")
+if not filtered_data.empty:
+    selected = filtered_data.iloc[0]
 
-st.subheader("🎵 Suggested Song")
-st.success(row["song"])
+    st.markdown("---")
 
-st.subheader("💬 Motivational Quote")
-st.info(f'"{row["quote"]}"')
+    st.subheader("🎵 Suggested Song")
+    st.success(selected["song"])
 
-# ---------------- RANDOM OPTION ----------------
+    st.subheader("💬 Motivational Quote")
+    st.info(f'"{selected["quote"]}"')
+else:
+    st.warning("No recommendations found for this emotion.")
+
+# ---------------- RANDOM RECOMMENDATION ----------------
 st.markdown("---")
 if st.button("🎲 Surprise Me"):
-    r = data.sample(1).iloc[0]
+    random_row = data.sample(1).iloc[0]
 
-    st.subheader("😊 Emotion")
-    st.write(r["emotion"])
+    st.subheader(f"😊 You got: {random_row['emotion']}")
+    
+    st.write("**🎵 Song:**")
+    st.success(random_row["song"])
 
-    st.subheader("🎵 Song")
-    st.success(r["song"])
-
-    st.subheader("💬 Quote")
-    st.info(f'"{r["quote"]}"')
+    st.write("**💬 Quote:**")
+    st.info(f'"{random_row["quote"]}"')
 
 # ---------------- FOOTER ----------------
 st.markdown("---")
