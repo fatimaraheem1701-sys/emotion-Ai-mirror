@@ -2,44 +2,57 @@ import streamlit as st
 import pandas as pd
 import random
 
-# Page Config
-st.set_page_config(page_title="Emotion AI Mirror", page_icon="😊", layout="centered")
+# ---------------- PAGE CONFIGURATION ----------------
+st.set_page_config(
+    page_title="Emotion AI Mirror",
+    page_icon="😊",
+    layout="centered"
+)
 
-# Title
+# ---------------- TITLE ----------------
 st.title("🪞 Emotion AI Mirror")
-st.write("Music & Quotes Based on Emotions")
+st.write("Emotion-based Music and Quotes Recommendation System")
 
-# Load Data
+# ---------------- LOAD CSV DATA ----------------
 @st.cache_data
 def load_data():
-    return pd.read_csv("emotion_data.csv")
+    # CSV file must contain columns: emotion, song, quote
+    return pd.read_csv("emotionaimirror.csv")
 
 data = load_data()
 
-# Emotion Selection
-emotion = st.selectbox("Select Your Emotion:", data["emotion"].unique())
+# ---------------- EMOTION SELECTION ----------------
+st.subheader("Select Your Emotion")
+emotion = st.selectbox(
+    "Choose an emotion:",
+    data["emotion"].unique()
+)
 
-# Filter Data
-emotion_row = data[data["emotion"] == emotion].iloc[0]
+# ---------------- DISPLAY RESULT ----------------
+selected = data[data["emotion"] == emotion].iloc[0]
 
-# Display Results
+st.markdown("---")
+
 st.subheader("🎵 Suggested Song")
-st.success(emotion_row["song"])
+st.success(selected["song"])
 
 st.subheader("💬 Motivational Quote")
-st.info(f'"{emotion_row["quote"]}"')
+st.info(f'"{selected["quote"]}"')
 
-# Optional: Random Button
-if st.button("🔄 Surprise Me"):
+# ---------------- RANDOM RECOMMENDATION ----------------
+st.markdown("---")
+if st.button("🎲 Surprise Me"):
     random_row = data.sample(1).iloc[0]
+
     st.subheader("😊 Emotion")
     st.write(random_row["emotion"])
+
     st.subheader("🎵 Song")
     st.success(random_row["song"])
+
     st.subheader("💬 Quote")
     st.info(f'"{random_row["quote"]}"')
 
-# Footer
+# ---------------- FOOTER ----------------
 st.markdown("---")
-st.caption("Emotion AI Mirror Project | Fatima | Introduction to AI Lab")
-
+st.caption("Emotion AI Mirror Project | Introduction to AI Lab")
