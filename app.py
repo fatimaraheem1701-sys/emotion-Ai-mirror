@@ -22,9 +22,7 @@ def load_data():
     file_path = os.path.join(base_path, "emotionaimirror.csv")
     
     # 2. Add a check to provide a helpful error message if file is missing
-    if not os.path.exists(file_path):
-os.path.join(base_path, "emotionaimirror.csv")
-st.stop()
+    file_path = os.path.join(base_path, "emotionaimirror.csv").
         
     return pd.read_csv(file_path)
 
