@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
 import random
+import os
 
-# ---------------- PAGE CONFIGURATION ----------------
+# ---------------- PAGE SETTINGS ----------------
 st.set_page_config(
     page_title="Emotion AI Mirror",
     page_icon="😊",
@@ -16,42 +17,43 @@ st.write("Emotion-based Music and Quotes Recommendation System")
 # ---------------- LOAD CSV DATA ----------------
 @st.cache_data
 def load_data():
-    # CSV file must contain columns: emotion, song, quote
-    return pd.read_csv("emotionaimirror.csv")
+    csv_path = os.path.join("emotionaimirror", "emotionaimirror.csv")
+    return pd.read_csv(csv_path)
 
 data = load_data()
 
 # ---------------- EMOTION SELECTION ----------------
 st.subheader("Select Your Emotion")
+
 emotion = st.selectbox(
     "Choose an emotion:",
     data["emotion"].unique()
 )
 
 # ---------------- DISPLAY RESULT ----------------
-selected = data[data["emotion"] == emotion].iloc[0]
+row = data[data["emotion"] == emotion].iloc[0]
 
 st.markdown("---")
 
 st.subheader("🎵 Suggested Song")
-st.success(selected["song"])
+st.success(row["song"])
 
 st.subheader("💬 Motivational Quote")
-st.info(f'"{selected["quote"]}"')
+st.info(f'"{row["quote"]}"')
 
-# ---------------- RANDOM RECOMMENDATION ----------------
+# ---------------- RANDOM OPTION ----------------
 st.markdown("---")
 if st.button("🎲 Surprise Me"):
-    random_row = data.sample(1).iloc[0]
+    r = data.sample(1).iloc[0]
 
     st.subheader("😊 Emotion")
-    st.write(random_row["emotion"])
+    st.write(r["emotion"])
 
     st.subheader("🎵 Song")
-    st.success(random_row["song"])
+    st.success(r["song"])
 
     st.subheader("💬 Quote")
-    st.info(f'"{random_row["quote"]}"')
+    st.info(f'"{r["quote"]}"')
 
 # ---------------- FOOTER ----------------
 st.markdown("---")
